@@ -1,3 +1,4 @@
 module.exports = {
-    secret: 'ggynb'
+    secret: 'ggynb',
+    storagePath: './public/images/user'
 }

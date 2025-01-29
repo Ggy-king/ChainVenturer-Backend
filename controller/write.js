@@ -4,12 +4,22 @@
  * @author 广源讲师
  */
 
-
 const WriteModel = require('../model/WriteModel')
 
+let imgPath;
+
+const postUploadImg = (req,res,next) => {
+    const file = req.file
+    if (!file) {
+      return res.status(400).json({ code:'6001',message: '图片上传失败' })
+    }
+    imgPath = file.path
+    res.json({ message: '图片上传成功' })
+}
+
 const postWriteInfo = (req,res,next) => {
-    const {formObj} = req.body
-    WriteModel.create({...formObj,author:req.user.username})
+    const { formObj } = req.body
+    WriteModel.create({...formObj,imgPath,author:req.user.username})
     .then(data => {
         res.json({
             code: '3000',
@@ -27,6 +37,9 @@ const postWriteInfo = (req,res,next) => {
     
 }
 
+
+
 module.exports = {
-    postWriteInfo
+    postUploadImg,
+    postWriteInfo,
 }

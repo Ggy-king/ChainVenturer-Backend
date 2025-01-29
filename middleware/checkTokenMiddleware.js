@@ -15,7 +15,7 @@ module.exports = (req,res,next) => {
             return res.json({
                 code: '2008',
                 message: 'token 校验失败',
-                data: err
+                data: 'token 无效或已过期'
             })
         }
 

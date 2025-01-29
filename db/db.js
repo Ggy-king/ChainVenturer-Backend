@@ -8,7 +8,7 @@ const mongoose = require('mongoose')
 
 const dbHOST = 'mongodb://127.0.0.1'
 const dbPORT = '27017'
-const dbNAME = 'SmartDomain'
+const dbNAME = 'ChainVenturer'
 
 mongoose.connect(`${dbHOST}:${dbPORT}/${dbNAME}`,{})
 

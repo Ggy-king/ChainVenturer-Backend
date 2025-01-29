@@ -28,6 +28,10 @@ const Schema = mongoose.Schema({
         required: true,
         enum: ['云计算','大数据','人工智能','区块链','互联网支付','其他技术或无']
     },
+    imgPath:{
+        type:String,
+        required: true
+    },
     author: {
         type: String,
         required:true
