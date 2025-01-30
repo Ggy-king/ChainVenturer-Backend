@@ -32,6 +32,10 @@ const Schema = mongoose.Schema({
         type:String,
         required: true
     },
+    writeHtml: {
+        type: String,
+        required: true
+    },
     author: {
         type: String,
         required:true
