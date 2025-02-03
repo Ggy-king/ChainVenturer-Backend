@@ -6,15 +6,19 @@
 
 const WriteModel = require('../model/WriteModel')
 
-let imgPath;
+let imgPath
 
-const postUploadImg = (req,res,next) => {
+const postUploadImg = async (req,res,next) => {
     const file = req.file
     if (!file) {
       return res.status(400).json({ code:'6001',message: '图片上传失败' })
     }
     imgPath = file.path
-    res.json({ message: '图片上传成功' })
+    res.json({
+        code: '6000',
+        message: '图片上传成功',
+        data: imgPath
+    })
 }
 
 const postWriteInfo = (req,res,next) => {

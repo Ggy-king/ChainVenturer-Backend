@@ -7,8 +7,7 @@
 const express = require('express')
 const router = express.Router()
 
-const {getUsersInfo,postUsersInfo} = require('../controller/users')
-
+const { getUsersInfo,postUsersInfo } = require('../controller/users')
 
 router.get('/', (req, res, next) => {
 

@@ -6,8 +6,15 @@
 const express = require('express')
 const router = express.Router()
 
-router.post('/',(req,res,next) => {
-    res.send('已收到')
+const { getArticlesDate } = require('../controller/articles')
+const { getEssayData } = require('../controller/articles')
+
+router.get('/',(req,res,next) => {
+    getEssayData(req,res,next)
+})
+
+router.get('/:id',(req,res,next) => {
+    getArticlesDate(req,res,next)
 })
 
 module.exports = router
