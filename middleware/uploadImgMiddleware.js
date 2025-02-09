@@ -13,7 +13,7 @@ module.exports = (storagePath) => {
             filename: function (req, file, cb) {
                 cb(null, req.user.username + '-' + Date.now() + path.extname(file.originalname)); // 文件名
             }
-        });
+        })
         
         const upload = multer({ storage: storage })
         upload.single('file')(req, res, (err) => {

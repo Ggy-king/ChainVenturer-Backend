@@ -10,6 +10,8 @@ module.exports = (req,res,next) => {
             data: null
         })
     }
+
+    req.user = null
     jwt.verify(token,secret,(err,data) => {
         if(err) {
             return res.json({
@@ -19,8 +21,7 @@ module.exports = (req,res,next) => {
             })
         }
 
-        req.user = data  //向路由中添加当前用户信息
-        // 校验成功
+        req.user = data
         next()
     })
 }

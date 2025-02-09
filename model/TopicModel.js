@@ -1,10 +1,8 @@
 /**
- * @description 创作模型
+ * @description 文章模型
  * @author 广源讲师
  */
-
 const mongoose = require('../db/db')
-
 const Schema = mongoose.Schema({
     title:{
         type: String,
@@ -13,7 +11,6 @@ const Schema = mongoose.Schema({
     topic:{
         type: String,
         required: true,
-        enum: ['投资领域','交易心得','监管政策','交易所相关','期货品种分析','期货社会影响','市场创新或前景'],
     },
     summarize:{
         type: String,
@@ -26,7 +23,6 @@ const Schema = mongoose.Schema({
     technology: {
         type:String,
         required: true,
-        enum: ['云计算','大数据','人工智能','区块链','技术分析','其他技术或无']
     },
     imgPath:{
         type:String,
@@ -38,6 +34,7 @@ const Schema = mongoose.Schema({
     },
     author: {
         type: String,
+        required: true,
         required:true
     },
     view_num: {
@@ -46,14 +43,17 @@ const Schema = mongoose.Schema({
     },
     put_time:{
         type: String,
+        required: true,
         default: new Date().toLocaleString()
     },
     createdAt:{
         type: Date,
+        required: true,
         default: new Date().toISOString()
     }
     
 })
 
-const WriteModel = mongoose.model('write-storage',Schema)
-module.exports = WriteModel
+const TopicModel = mongoose.model('topic-storages',Schema)
+
+module.exports = TopicModel

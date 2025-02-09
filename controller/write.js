@@ -5,9 +5,13 @@
  */
 
 const WriteModel = require('../model/WriteModel')
+const fs = require('fs')
+const path = require('path')
+const { URL } = require('url')
 
+
+// 上传图片
 let imgPath
-
 const postUploadImg = async (req,res,next) => {
     const file = req.file
     if (!file) {
@@ -21,6 +25,7 @@ const postUploadImg = async (req,res,next) => {
     })
 }
 
+// 上传文章
 const postWriteInfo = (req,res,next) => {
     const { formObj } = req.body
     WriteModel.create({...formObj,imgPath,author:req.user.username})
@@ -38,12 +43,59 @@ const postWriteInfo = (req,res,next) => {
             err
         })
     })
-    
 }
 
+// 更新文章
+const patchWriteEdit = (req,res,next) => {
+    const { formObj } = req.body
+    if(imgPath) {
+        formObj.imgPath = imgPath
+        const urlObj = new URL(formObj.originalUrl)
+        fs.unlinkSync(path.resolve(__dirname,`..${urlObj.pathname}`))
+    }
+    const put_time = new Date().toLocaleString()
+    const createdAt = new Date().toISOString()
+    WriteModel.updateOne({_id: formObj._id},{...formObj,put_time,createdAt})
+    .then(data => {
+        res.json({
+            code: '3000',
+            message: '文章更新成功',
+            data: null
+        })
+    })
+    .catch(err => {
+        res.json({
+            code: '3004',
+            message: '文章更新失败',
+            err: null
+        })
+    })
+}
 
+// 删除文章
+const deleteWriteOne = (req,res,next) => {
+    WriteModel.deleteOne({_id: req.query.id})
+    .then(data => {
+        const urlObj = new URL(req.query.imgUrl)
+        fs.unlinkSync(path.resolve(__dirname,`..${urlObj.pathname}`))
+        res.json({
+            code: '3000',
+            message: '文章删除成功',
+            data: null
+        })
+    })
+    .catch(err => {
+        res.json({
+            code: '3006',
+            message: '文章删除失败',
+            err: null
+        })
+    })
+}
 
 module.exports = {
     postUploadImg,
     postWriteInfo,
+    patchWriteEdit,
+    deleteWriteOne
 }
