@@ -10,30 +10,6 @@ const { secret } = require('../config/config')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-
-// 获取用户信息 登录操作
-const getUsersInfo = (req,res,next) => {
-
-    // UsersModel.find().sort({ data: -1 }).limit(2).exec()
-    // .then(data => {
-    //     res.json({
-    //         code: '钱利521',
-    //         message: '成功',
-    //         data:data
-    //     })
-
-
-    // }).catch(err => {
-    //     res.json({
-    //         code: '1002',
-    //         message: '失败',
-    //         data:err
-    //     })
-    // })
-    res.send('123')
-}
-
-
 // 获取用户信息 登录操作
 
 const postUsersInfo = async (req,res,next) => {
@@ -81,14 +57,17 @@ const postUsersInfo = async (req,res,next) => {
                 err
             })
         })
-            
-
     }
+}
+const putCollectEssay = (req,res,next) => {
 
-    
+}
+const getCollectEssay = (req,res,next) => {
+
 }
 
 module.exports = {
-    getUsersInfo,
-    postUsersInfo
+    postUsersInfo,
+    putCollectEssay,
+    getCollectEssay
 }

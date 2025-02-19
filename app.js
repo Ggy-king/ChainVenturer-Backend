@@ -8,9 +8,13 @@ const cors = require('cors')
 const { origin } = require('./config/config')
 const refererMiddleware = require('./middleware/refererMiddleware')
 const indexRouter = require('./routes/index')
+const totalRouter = require('./routes/total')
 const usersRouter = require('./routes/users')
 const articlesRouter = require('./routes/articles')
+const newsRouter = require('./routes/news')
 const writeRouter = require('./routes/write')
+const topicRouter = require('./routes/topic')
+const developerRouter = require('./routes/developer')
 
 const app = express()
 
@@ -39,9 +43,13 @@ app.use('/public', express.static(publicImagePath));
 app.use('/public', refererMiddleware)
 
 app.use('/', indexRouter)
+app.use('/total', totalRouter)
 app.use('/users', usersRouter)
 app.use('/articles', articlesRouter)
+app.use('/news', newsRouter)
 app.use('/write', writeRouter)
+app.use('/topic', topicRouter)
+app.use('/developer', developerRouter)
 
 // 捕获404并转发给错误处理程序
 app.use(function(req, res, next) {

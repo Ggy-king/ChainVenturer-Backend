@@ -20,7 +20,7 @@ const Schema = mongoose.Schema({
         required: true
     },
     currency:{
-        type: Array,
+        type:  [String],
         required: true
     },
     technology: {

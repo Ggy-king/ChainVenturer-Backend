@@ -4,6 +4,12 @@
  */
 const mongoose = require('../db/db')
 
+// 嵌入子文档
+const collectSchema = mongoose.Schema({
+    collectId: {
+        type: String
+    }
+})
 
 const Schema = mongoose.Schema({
     username: {
@@ -13,7 +19,8 @@ const Schema = mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+    collectEssay: [collectSchema]
 })
 
 const UsersModel = mongoose.model('users-info',Schema)
