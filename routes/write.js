@@ -28,8 +28,4 @@ router.delete('/de',checkTokenMiddleware,(req,res,next) => {
 })
 
 
-
-
-
-
 module.exports = router

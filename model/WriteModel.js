@@ -3,7 +3,7 @@
  * @author 广源讲师
  */
 
-const mongoose = require('../db/db')
+const { mongoose } = require('../db/db')
 
 const Schema = mongoose.Schema({
     title:{

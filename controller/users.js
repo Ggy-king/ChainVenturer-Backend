@@ -5,10 +5,12 @@
  */
 
 const UsersModel = require('../model/UsersModel')
-const { secret } = require('../config/config')
+const WriteModel = require('../model/WriteModel')
+const { secret,serverOrigin } = require('../config/config')
 
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+
 
 // 获取用户信息 登录操作
 
@@ -54,16 +56,56 @@ const postUsersInfo = async (req,res,next) => {
             res.json({
                 code: '3003',
                 message: '用户注册失败',
-                err
+                err: null
             })
         })
     }
 }
-const putCollectEssay = (req,res,next) => {
+const putCollectEssay = async (req,res,next) => {
+    const username = { username: req.user.username }
+    const updateCollect = {collectEssay: req.body.id }
+    try {
+        const result = await UsersModel.updateOne(username,{ $pull: updateCollect })
+        if(result.modifiedCount === 0) {
+            await UsersModel.updateOne(username,{ $addToSet: updateCollect })
+        }
+        res.json({
+            code: '3000',
+            message: '收藏或取消收藏成功',
+            data: result.modifiedCount
+        })
+    } catch (error) {
+        res.json({
+            code: '3004',
+            message: '数据库更新失败',
+            err: null
+        })
+    }
 
 }
-const getCollectEssay = (req,res,next) => {
+const getCollectEssay = async (req,res,next) => {
+    try {
+        const username = { username: req.user.username }
+        const result = await UsersModel.find(username,{collectEssay: 1,_id: 0}).limit(18)
+        
+        const collectIds = result[0].collectEssay
+        const data = await WriteModel.find({_id: { $in: collectIds }})
+        data.map(item => item.imgPath = serverOrigin + '/' + item.imgPath.replace(/\\/g, '/'))
+        
 
+        res.json({
+            code: '3000',
+            message: '个人收藏查询成功',
+            data
+        })
+    } catch (error) {
+        res.json({
+            code: '3002',
+            message: '个人收藏查询失败',
+            err: null
+        })
+    }
+        
 }
 
 module.exports = {

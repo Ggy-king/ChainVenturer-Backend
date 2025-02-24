@@ -2,7 +2,7 @@
  * @description 文章模型
  * @author 广源讲师
  */
-const mongoose = require('../db/db')
+const { mongoose } = require('../db/db')
 const Schema = mongoose.Schema({
     title:{
         type: String,

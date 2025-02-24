@@ -2,14 +2,14 @@
  * @description 用户模型
  * @author 广源讲师
  */
-const mongoose = require('../db/db')
+const { mongoose } = require('../db/db')
 
 // 嵌入子文档
-const collectSchema = mongoose.Schema({
-    collectId: {
-        type: String
-    }
-})
+// const collectSchema = mongoose.Schema({
+//     collectId: {
+//         type: String
+//     }
+// })
 
 const Schema = mongoose.Schema({
     username: {
@@ -20,7 +20,7 @@ const Schema = mongoose.Schema({
         type: String,
         required: true
     },
-    collectEssay: [collectSchema]
+    collectEssay: [String]
 })
 
 const UsersModel = mongoose.model('users-info',Schema)
