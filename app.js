@@ -11,13 +11,15 @@ const indexRouter = require('./routes/index')
 const totalRouter = require('./routes/total')
 const usersRouter = require('./routes/users')
 const articlesRouter = require('./routes/articles')
+const marketRouter = require('./routes/market')
 const newsRouter = require('./routes/news')
+const toolRouter = require('./routes/tool')
+const ratesRouter = require('./routes/rates')
 const writeRouter = require('./routes/write')
 const topicRouter = require('./routes/topic')
 const developerRouter = require('./routes/developer')
 
 const app = express()
-
 
 const corsOptions = {
   origin: origin, // 允许单个源
@@ -46,7 +48,10 @@ app.use('/', indexRouter)
 app.use('/total', totalRouter)
 app.use('/users', usersRouter)
 app.use('/articles', articlesRouter)
+app.use('/market', marketRouter)
 app.use('/news', newsRouter)
+app.use('/tool', toolRouter)
+app.use('/rates', ratesRouter)
 app.use('/write', writeRouter)
 app.use('/topic', topicRouter)
 app.use('/developer', developerRouter)
@@ -66,5 +71,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500)
   res.render('error')
 })
+
+
 
 module.exports = app

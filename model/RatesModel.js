@@ -20,5 +20,5 @@ const Schema = mongoose.Schema({
 })
 
 
-const RatesModel = mongoose.model('rates-storages',Schema)
+const RatesModel = mongoose.model('rates-storage',Schema)
 module.exports = RatesModel
