@@ -24,6 +24,28 @@ const getMarketContract = (req,res,next) => {
     })
 }
 
+const getContractSimple = (req,res,next) => {
+    ContractModel.aggregate([
+        { $sample: { size: 20} },
+        { $project: { name: 1, price: 1, increaseRate: 1} }
+    ]).exec()
+    .then(data => {
+        res.json({
+            code: '3000',
+            message: '合约行情获取成功',
+            data
+        })
+    })
+    .catch(err => {
+        res.json({
+            code: '3002',
+            message: '合约行情获取失败',
+            err: null
+        })
+    })
+}
+
 module.exports = {
-    getMarketContract
+    getMarketContract,
+    getContractSimple
 }

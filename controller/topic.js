@@ -15,32 +15,32 @@ const getTopicDate = async(req,res,next) => {
             {
                 $facet: {
                     topicA: [
-                        {$match: {topic: '投资领域'}},
-                        {$sample: {size: 3}}
+                        { $match: {topic: '投资领域'} },
+                        { $sample: {size: 3} }
                     ],
                     topicB: [
-                        {$match: {topic: '交易心得'}},
-                        {$sample: {size: 3}}
+                        { $match: {topic: '交易心得'} },
+                        { $sample: {size: 3} }
                     ],
                     topicC: [
-                        {$match: {topic: '监管政策'}},
-                        {$sample: {size: 3}}
+                        { $match: {topic: '监管政策'} },
+                        { $sample: {size: 3} }
                     ],
                     topicD: [
-                        {$match: {topic: '交易所相关'}},
-                        {$sample: {size: 3}}
+                        { $match: {topic: '交易所相关'} },
+                        { $sample: {size: 3} }
                     ],
                     topicE: [
-                        {$match: {topic: '期货品种分析'}},
-                        {$sample: {size: 3}}
+                        { $match: {topic: '期货品种分析'} },
+                        { $sample: {size: 3} }
                     ],
                     topicF: [
-                        {$match: {topic: '期货社会影响'}},
-                        {$sample: {size: 3}}
+                        { $match: {topic: '期货社会影响'} },
+                        { $sample: {size: 3} }
                     ],
                     topicG: [
-                        {$match: {topic: '市场创新或前景'}},
-                        {$sample: {size: 3}}
+                        { $match: {topic: '市场创新或前景'} },
+                        { $sample: {size: 3} }
                     ]
                 }
             }

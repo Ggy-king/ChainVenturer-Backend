@@ -13,7 +13,6 @@ const jwt = require('jsonwebtoken')
 
 
 // 获取用户信息 登录操作
-
 const postUsersInfo = async (req,res,next) => {
     // 登录 没有则注册
     const {username,password} = req.body

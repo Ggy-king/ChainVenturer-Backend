@@ -8,7 +8,8 @@ const { serverOrigin } = require('../config/config')
 
 // 获取文章列表
 const getArticlesDate = (req,res,next) => {
-    WriteModel.find().sort({createdAt: -1}).limit(24).exec()
+    const { page = 1, limit = 18 } = req.query
+    WriteModel.find().sort({createdAt: -1}).skip((page - 1) * limit).limit(limit).exec()
     .then(data => {
         data.map(item => item.imgPath = serverOrigin + '/' + item.imgPath.replace(/\\/g, '/'))
         res.json({

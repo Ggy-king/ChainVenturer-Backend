@@ -5,6 +5,8 @@
  */
 
 const WriteModel = require('../model/WriteModel')
+const TopicModel = require('../model/TopicModel')
+const SelfModel = require('../model/SelfModel')
 const { serverOrigin } = require('../config/config')
 
 const getCarouselImg = async(req,res,next) => {
@@ -29,6 +31,26 @@ const getCarouselImg = async(req,res,next) => {
     })
 }
 
+const getSelfText = (req,res,next) => {
+    SelfModel.aggregate([
+        { $sample: {size: 1}},
+        { $project: { _id: 0,selfText: 1 }}
+    ])
+    .then(data => {
+        res.json({
+            code: '3000',
+            message: '文字获取成功',
+            data
+        })
+    })
+    .catch(err => {
+        res.json({
+            code: '3002',
+            message: '文字获取失败',
+            err: null
+        })
+    })
+}
 
 const getEssayHot = async(req,res,next) => {
     WriteModel.find().sort({ view_num: -1 }).limit(12).exec()
@@ -90,11 +112,34 @@ const getVariousEssay = async (req,res,next) => {
             err: null
         })
     }
-    
+}
+
+const getTopicOne = (req,res,next) => {
+    TopicModel.aggregate([
+        { $sample: {size: 1}},
+        { $project: { _id: 1, title: 1,imgPath: 1 } }
+    ])
+    .then(data => {
+        data[0].imgPath = serverOrigin + '/' + data[0].imgPath.replace(/\\/g, '/')
+        res.json({
+            code: '3000',
+            message: '文章获取成功',
+            data
+        })
+    })
+    .catch(err => {
+        res.json({
+            code: '3002',
+            message: '文章获取失败',
+            err: null
+        })
+    })
 }
 
 module.exports = {
     getEssayHot,
+    getSelfText,
     getVariousEssay,
-    getCarouselImg
+    getCarouselImg,
+    getTopicOne
 }
