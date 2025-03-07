@@ -13,8 +13,8 @@ const postSearchAll = async (req,res,next) => {
     if(!search) return res.status(400).json({error: '搜索内容不能为空'})
     const searchRegex = new RegExp(search, 'i')   // 不分大小写查找
     try {
-        const topics = await TopicModel.find({ title: searchRegex },{writeHtml: 0,author: 0,createdAt: 0})
-        const articles = await WriteModel.find({ title: searchRegex },{writeHtml: 0,author: 0,createdAt: 0})
+        const topics = await TopicModel.find({ title: searchRegex },{writeHtml: 0,comments: 0,author: 0,createdAt: 0})
+        const articles = await WriteModel.find({ title: searchRegex },{writeHtml: 0,comments: 0,author: 0,createdAt: 0})
         // const currency = await CoinsModel.find({ $or: [{ name: searchRegex }, { description: searchRegex }] })
         // const technology = await EssayModel.find({ $or: [{ title: searchRegex }, { body: searchRegex }] })
  

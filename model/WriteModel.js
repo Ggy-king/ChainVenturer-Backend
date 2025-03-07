@@ -44,6 +44,13 @@ const Schema = mongoose.Schema({
         type: Number,
         default: Math.floor(Math.random() * (1200 - 100 + 1)) + 100
     },
+    comments: [
+        {
+            user: String,
+            text: String,
+            date: { type: Date, default: Date.now }
+        }
+    ],
     put_time:{
         type: String,
         default: new Date().toLocaleString()

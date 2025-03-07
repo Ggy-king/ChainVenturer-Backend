@@ -60,7 +60,9 @@ const postUsersInfo = async (req,res,next) => {
         })
     }
 }
-const putCollectEssay = async (req,res,next) => {
+
+// 收藏文章
+const patchCollectEssay = async (req,res,next) => {
     const username = { username: req.user.username }
     const updateCollect = {collectEssay: req.body.id }
     try {
@@ -82,13 +84,15 @@ const putCollectEssay = async (req,res,next) => {
     }
 
 }
+
+// 获取收藏文章列表
 const getCollectEssay = async (req,res,next) => {
     try {
         const username = { username: req.user.username }
         const result = await UsersModel.find(username,{collectEssay: 1,_id: 0}).limit(18)
         
         const collectIds = result[0].collectEssay
-        const data = await WriteModel.find({_id: { $in: collectIds }})
+        const data = await WriteModel.find({_id: { $in: collectIds }}).select({ writeHtml: 0, comments: 0 })
         data.map(item => item.imgPath = serverOrigin + '/' + item.imgPath.replace(/\\/g, '/'))
         
 
@@ -109,6 +113,6 @@ const getCollectEssay = async (req,res,next) => {
 
 module.exports = {
     postUsersInfo,
-    putCollectEssay,
+    patchCollectEssay,
     getCollectEssay
 }

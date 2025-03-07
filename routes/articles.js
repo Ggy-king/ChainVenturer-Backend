@@ -10,14 +10,17 @@ const { getArticlesDate,getEssayData,getPersonArticle } = require('../controller
 
 const checkTokenMiddleware = require('../middleware/checkTokenMiddleware')
 
+// 获取某文章
 router.get('/',(req,res,next) => {
     getEssayData(req,res,next)
 })
 
-router.get('/main/:num',(req,res,next) => {
+// 获取文章列表
+router.get('/main',(req,res,next) => {
     getArticlesDate(req,res,next)
 })
 
+// 根据用户id获取文章列表
 router.get('/user',checkTokenMiddleware,(req,res,next) => {
     getPersonArticle(req,res,next)
 })

@@ -7,17 +7,17 @@
 const express = require('express')
 const router = express.Router()
 
-const { postUsersInfo,putCollectEssay,getCollectEssay } = require('../controller/users')
+const { postUsersInfo,patchCollectEssay,getCollectEssay } = require('../controller/users')
 const checkTokenMiddleware = require('../middleware/checkTokenMiddleware')
-
 
 router.post('/',(req, res, next) => {
   postUsersInfo(req,res,next)
 })
 
-router.put('/collect',checkTokenMiddleware, (req, res, next) => {
-  putCollectEssay(req,res,next)
+router.patch('/collect',checkTokenMiddleware, (req, res, next) => {
+  patchCollectEssay(req,res,next)
 })
+
 router.get('/collect',checkTokenMiddleware, (req, res, next) => {
   getCollectEssay(req,res,next)
 })

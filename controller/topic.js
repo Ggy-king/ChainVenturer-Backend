@@ -10,37 +10,58 @@ const { serverOrigin } = require('../config/config')
 
 const getTopicDate = async(req,res,next) => {
     try {
-        const topicMainDate = await TopicModel.find().sort({createdAt: 1}).exec()
+        const topicMainDate = await TopicModel.find().sort({createdAt: 1}).select({ writeHtml: 0, comments: 0 }).exec()
         const topicListDate = await WriteModel.aggregate([
             {
                 $facet: {
                     topicA: [
                         { $match: {topic: '投资领域'} },
-                        { $sample: {size: 3} }
+                        { $sample: {size: 3} },
+                        {
+                            $project: {writeHtml: 0,comments: 0}
+                        }
                     ],
                     topicB: [
                         { $match: {topic: '交易心得'} },
-                        { $sample: {size: 3} }
+                        { $sample: {size: 3} },
+                        {
+                            $project: {writeHtml: 0,comments: 0}
+                        }
                     ],
                     topicC: [
                         { $match: {topic: '监管政策'} },
-                        { $sample: {size: 3} }
+                        { $sample: {size: 3} },
+                        {
+                            $project: {writeHtml: 0,comments: 0}
+                        }
                     ],
                     topicD: [
                         { $match: {topic: '交易所相关'} },
-                        { $sample: {size: 3} }
+                        { $sample: {size: 3} },
+                        {
+                            $project: {writeHtml: 0,comments: 0}
+                        }
                     ],
                     topicE: [
                         { $match: {topic: '期货品种分析'} },
-                        { $sample: {size: 3} }
+                        { $sample: {size: 3} },
+                        {
+                            $project: {writeHtml: 0,comments: 0}
+                        }
                     ],
                     topicF: [
                         { $match: {topic: '期货社会影响'} },
-                        { $sample: {size: 3} }
+                        { $sample: {size: 3} },
+                        {
+                            $project: {writeHtml: 0,comments: 0}
+                        }
                     ],
                     topicG: [
                         { $match: {topic: '市场创新或前景'} },
-                        { $sample: {size: 3} }
+                        { $sample: {size: 3} },
+                        {
+                            $project: {writeHtml: 0,comments: 0}
+                        }
                     ]
                 }
             }
