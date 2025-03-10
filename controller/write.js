@@ -20,42 +20,108 @@ const postUploadImg = async (req, res, next) => {
         }
 
         // 使用原有的文件路径
-        const originalPath = file.path
-        const compressedPath = originalPath.replace(/\.[^/.]+$/, '.webp')
+        const originalPath = file.path;
+        const compressedPath = originalPath.replace(/\.[^/.]+$/, '.webp');
 
-        // 压缩并保存图片
-        await sharp(originalPath)
-            .resize(1920, 1080, {  // 增加最大尺寸
-                fit: 'inside',
-                withoutEnlargement: true
-            })
-            .webp({ 
-                quality: 90,  // 提高质量
-                effort: 4,    // 降低压缩努力程度，提高处理速度
-                lossless: false,
-                nearLossless: true  // 启用接近无损压缩
-            })
-            .toFile(compressedPath)
+        try {
+            // 使用更安全的同步方法创建目录
+            fs.mkdirSync(path.dirname(compressedPath), { 
+                recursive: true,
+                mode: 0o755 
+            });
 
-        // 删除原始文件
-        fs.unlinkSync(originalPath)
+            // 使用更可靠的压缩方式
+            await sharp(originalPath)
+                .rotate() // 自动旋转图像
+                .resize(1920, 1080, {
+                    fit: 'inside',
+                    withoutEnlargement: true
+                })
+                .webp({ 
+                    quality: 80,  // 优化质量参数
+                    effort: 6    // 提高压缩效率
+                })
+                .toFile(compressedPath);
 
-        // 使用压缩后的路径格式
-        imgPath = compressedPath
-        res.json({
-            code: '6000',
-            message: '图片上传成功',
-            data: imgPath
-        })
+            // 添加文件有效性检查
+            const stats = fs.statSync(compressedPath);
+            if (stats.size === 0) {
+                throw new Error('压缩文件生成失败');
+            }
+
+            // 删除原始文件（异步安全方式）
+            fs.unlink(originalPath, (err) => {
+                if (err) console.error('删除原始文件失败:', err);
+            });
+
+            imgPath = compressedPath;
+            return res.json({
+                code: '6000',
+                message: '图片上传成功',
+                data: imgPath
+            });
+            
+        } catch (compressError) {
+            // 删除可能存在的损坏文件
+            if (fs.existsSync(compressedPath)) {
+                fs.unlinkSync(compressedPath);
+            }
+            throw compressError;
+        }
+
     } catch (error) {
-        console.error('图片处理失败，详细错误:', error)
-        res.status(500).json({ 
+        console.error('图片处理失败:', error);
+        return res.status(500).json({ 
             code: '6002', 
             message: '图片处理失败',
-            error: error.message
-        })
+            error: error.message 
+        });
     }
 }
+// const postUploadImg = async (req, res, next) => {
+//     try {
+//         const file = req.file
+//         if (!file) {
+//             return res.status(400).json({ code: '6001', message: '图片上传失败' })
+//         }
+
+//         // 使用原有的文件路径
+//         const originalPath = file.path
+//         const compressedPath = originalPath.replace(/\.[^/.]+$/, '.webp')
+
+//         // 压缩并保存图片
+//         await sharp(originalPath)
+//             .resize(1920, 1080, {  // 增加最大尺寸
+//                 fit: 'inside',
+//                 withoutEnlargement: true
+//             })
+//             .webp({ 
+//                 quality: 90,  // 提高质量
+//                 effort: 4,    // 降低压缩努力程度，提高处理速度
+//                 lossless: false,
+//                 nearLossless: true  // 启用接近无损压缩
+//             })
+//             .toFile(compressedPath)
+
+//         // 删除原始文件
+//         fs.unlinkSync(originalPath)
+
+//         // 使用压缩后的路径格式
+//         imgPath = compressedPath
+//         res.json({
+//             code: '6000',
+//             message: '图片上传成功',
+//             data: imgPath
+//         })
+//     } catch (error) {
+//         console.error('图片处理失败，详细错误:', error)
+//         res.status(500).json({ 
+//             code: '6002', 
+//             message: '图片处理失败',
+//             error: error.message
+//         })
+//     }
+// }
 
 // 上传文章
 const postWriteInfo = async (req, res, next) => {
@@ -113,7 +179,7 @@ const patchWriteEdit = async (req, res, next) => {
         const put_time = new Date().toLocaleString()
         const createdAt = new Date().toISOString()
 
-        const data = await WriteModel.updateOne(
+        await WriteModel.updateOne(
             { _id: formObj._id },
             { ...updateObj, put_time, createdAt }
         )
