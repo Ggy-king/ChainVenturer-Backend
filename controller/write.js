@@ -8,198 +8,74 @@ const WriteModel = require('../model/WriteModel')
 const fs = require('fs')
 const path = require('path')
 const { URL } = require('url')
-const sharp = require('sharp')
+
 
 // 上传图片
-let imgPath
-const postUploadImg = async (req, res, next) => {
-    try {
-        const file = req.file
-        if (!file) {
-            return res.status(400).json({ code: '6001', message: '图片上传失败' })
-        }
-
-        // 使用原有的文件路径
-        const originalPath = file.path;
-        const compressedPath = originalPath.replace(/\.[^/.]+$/, '.webp');
-
-        try {
-            // 使用更安全的同步方法创建目录
-            fs.mkdirSync(path.dirname(compressedPath), { 
-                recursive: true,
-                mode: 0o755 
-            });
-
-            // 使用更可靠的压缩方式
-            await sharp(originalPath)
-                .rotate() // 自动旋转图像
-                .resize(1920, 1080, {
-                    fit: 'inside',
-                    withoutEnlargement: true
-                })
-                .webp({ 
-                    quality: 80,  // 优化质量参数
-                    effort: 6    // 提高压缩效率
-                })
-                .toFile(compressedPath);
-
-            // 添加文件有效性检查
-            const stats = fs.statSync(compressedPath);
-            if (stats.size === 0) {
-                throw new Error('压缩文件生成失败');
-            }
-
-            // 删除原始文件（异步安全方式）
-            fs.unlink(originalPath, (err) => {
-                if (err) console.error('删除原始文件失败:', err);
-            });
-
-            imgPath = compressedPath;
-            return res.json({
-                code: '6000',
-                message: '图片上传成功',
-                data: imgPath
-            });
-            
-        } catch (compressError) {
-            // 删除可能存在的损坏文件
-            if (fs.existsSync(compressedPath)) {
-                fs.unlinkSync(compressedPath);
-            }
-            throw compressError;
-        }
-
-    } catch (error) {
-        console.error('图片处理失败:', error);
-        return res.status(500).json({ 
-            code: '6002', 
-            message: '图片处理失败',
-            error: error.message 
-        });
+const postUploadImg = async (req,res,next) => {
+    const file = req.file
+    if (!file) {
+      return res.status(400).json({ code:'6001',message: '图片上传失败' })
     }
+    
+    res.json({
+        code: '6000',
+        message: '图片上传成功',
+        data: file.path
+    })
 }
-// const postUploadImg = async (req, res, next) => {
-//     try {
-//         const file = req.file
-//         if (!file) {
-//             return res.status(400).json({ code: '6001', message: '图片上传失败' })
-//         }
-
-//         // 使用原有的文件路径
-//         const originalPath = file.path
-//         const compressedPath = originalPath.replace(/\.[^/.]+$/, '.webp')
-
-//         // 压缩并保存图片
-//         await sharp(originalPath)
-//             .resize(1920, 1080, {  // 增加最大尺寸
-//                 fit: 'inside',
-//                 withoutEnlargement: true
-//             })
-//             .webp({ 
-//                 quality: 90,  // 提高质量
-//                 effort: 4,    // 降低压缩努力程度，提高处理速度
-//                 lossless: false,
-//                 nearLossless: true  // 启用接近无损压缩
-//             })
-//             .toFile(compressedPath)
-
-//         // 删除原始文件
-//         fs.unlinkSync(originalPath)
-
-//         // 使用压缩后的路径格式
-//         imgPath = compressedPath
-//         res.json({
-//             code: '6000',
-//             message: '图片上传成功',
-//             data: imgPath
-//         })
-//     } catch (error) {
-//         console.error('图片处理失败，详细错误:', error)
-//         res.status(500).json({ 
-//             code: '6002', 
-//             message: '图片处理失败',
-//             error: error.message
-//         })
-//     }
-// }
 
 // 上传文章
-const postWriteInfo = async (req, res, next) => {
-    try {
-        const { formObj } = req.body
+const postWriteInfo = (req,res,next) => {
 
-        if (!imgPath) {
-            return res.status(400).json({
-                code: '3001',
-                message: '缺少图片路径'
-            })
-        }
-
-        const data = await WriteModel.create({
-            ...formObj,
-            imgPath,
-            author: req.user.username
-        })
-
+    const { formObj,imgPath } = req.body
+    WriteModel.create({...formObj,imgPath,author:req.user.username})
+    .then(data => {
         res.json({
             code: '3000',
             message: '文章创建成功',
-            data
+            data: null
         })
-    } catch (err) {
+    })
+    .catch(err => {
         res.json({
             code: '3003',
             message: '文章创建失败',
-            err
+            err: null
         })
-    }
+    })
+
 }
 
 // 更新文章
-const patchWriteEdit = async (req, res, next) => {
-    try {
-        const { formObj } = req.body
+const patchWriteEdit = (req,res,next) => {
+    const { formObj,imgPath } = req.body
+    if(imgPath) {
+        formObj.imgPath = imgPath
+        const urlObj = new URL(formObj.originalUrl)
+        fs.unlinkSync(path.resolve(__dirname,`..${urlObj.pathname}`))
+    }
 
-        // 构建更新对象
-        const updateObj = { ...formObj }
-        
-        // 只有当有新的图片路径时才更新图片
-        if (imgPath) {
-            updateObj.imgPath = imgPath
-            // 删除旧图片
-            if (formObj.originalUrl) {
-                const urlObj = new URL(formObj.originalUrl)
-                fs.unlinkSync(path.resolve(__dirname, `..${urlObj.pathname}`))
-            }
-        } else {
-            // 如果没有新的图片路径，删除 imgPath 字段，这样数据库中的值就不会被更新
-            delete updateObj.imgPath
-        }
-
-        const put_time = new Date().toLocaleString()
-        const createdAt = new Date().toISOString()
-
-        await WriteModel.updateOne(
-            { _id: formObj._id },
-            { ...updateObj, put_time, createdAt }
-        )
-
+    const put_time = new Date().toLocaleString()
+    const createdAt = new Date().toISOString()
+    WriteModel.updateOne({_id: formObj._id},{...formObj,put_time,createdAt})
+    .then(data => {
         res.json({
             code: '3000',
             message: '文章更新成功',
             data: null
         })
-    } catch (err) {
+    })
+    .catch(err => {
         res.json({
             code: '3004',
             message: '文章更新失败',
             err: null
         })
-    }
+    })
 }
 
 // 删除文章
-const deleteWriteOne = (req, res, next) => {
+const deleteWriteOne = (req,res,next) => {
     WriteModel.deleteOne({_id: req.query.id})
     .then(data => {
         const urlObj = new URL(req.query.imgUrl)
