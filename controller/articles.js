@@ -52,6 +52,27 @@ const getEssayData = (req,res,next) => {
     })
 }
 
+// 获取热门文章组件部分
+const getArticlesHot = (req,res,next) => {
+    WriteModel.aggregate([
+        { $sample: { size: 10} },
+        { $project: { title: 1, author: 1, view_num: 1} }
+    ]).exec()
+    .then(data => {
+        res.json({
+            code: '3000',
+            message: '文章获取成功',
+            data
+        })
+    })
+    .catch(err => {
+        res.json({
+            code: '3002',
+            message: '文章获取失败',
+            err: null
+        })
+    })
+}
 // 获取某用户的文章情况
 const getPersonArticle = (req,res,next) => {
     if(req.query.id) {
@@ -102,5 +123,6 @@ const getPersonArticle = (req,res,next) => {
 module.exports = {
     getArticlesDate,
     getEssayData,
-    getPersonArticle
+    getPersonArticle,
+    getArticlesHot
 }

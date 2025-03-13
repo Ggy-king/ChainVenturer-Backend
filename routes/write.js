@@ -14,6 +14,7 @@ const { storagePath } = require('../config/config')
 router.post('/cover-img',checkTokenMiddleware,uploadImgMiddleware(storagePath),(req,res,next) => {
     postUploadImg(req,res,next)
 })
+
 // 上传文章接口
 router.post('/',checkTokenMiddleware,(req,res,next) => {
     postWriteInfo(req,res,next)

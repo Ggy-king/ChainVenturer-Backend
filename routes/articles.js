@@ -6,7 +6,7 @@
 const express = require('express')
 const router = express.Router()
 
-const { getArticlesDate,getEssayData,getPersonArticle } = require('../controller/articles')
+const { getArticlesDate,getEssayData,getArticlesHot,getPersonArticle } = require('../controller/articles')
 
 const checkTokenMiddleware = require('../middleware/checkTokenMiddleware')
 
@@ -18,11 +18,18 @@ router.get('/',(req,res,next) => {
 // 获取文章列表
 router.get('/main',(req,res,next) => {
     getArticlesDate(req,res,next)
+
+})
+
+// 获取组件热门（随机）文章
+router.get('/hot',(req,res,next) => {
+    getArticlesHot(req,res,next)
 })
 
 // 根据用户id获取文章列表
 router.get('/user',checkTokenMiddleware,(req,res,next) => {
     getPersonArticle(req,res,next)
+
 })
 
 
