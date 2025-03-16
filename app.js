@@ -7,6 +7,8 @@ const cors = require('cors')
 
 const { origin } = require('./config/config')
 const refererMiddleware = require('./middleware/refererMiddleware')
+const cacheMiddleware = require('./middleware/cacheMiddleware')
+
 const indexRouter = require('./routes/index')
 const totalRouter = require('./routes/total')
 const usersRouter = require('./routes/users')
@@ -17,6 +19,8 @@ const toolRouter = require('./routes/tool')
 const ratesRouter = require('./routes/rates')
 const writeRouter = require('./routes/write')
 const topicRouter = require('./routes/topic')
+const searchRouter = require('./routes/search')
+const navigatorRouter = require('./routes/navigator')
 const developerRouter = require('./routes/developer')
 
 const app = express()
@@ -38,10 +42,12 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(cors(corsOptions))
+app.use(cacheMiddleware)
+// 在路由注册前添加OPTIONS处理
+app.options('*', cors(corsOptions)); // 全局OPTIONS处理
 
-
-const publicImagePath = path.join(__dirname, 'public');
-app.use('/public', express.static(publicImagePath));
+const publicImagePath = path.join(__dirname, 'public')
+app.use('/public', express.static(publicImagePath))
 app.use('/public', refererMiddleware)
 
 app.use('/', indexRouter)
@@ -54,6 +60,8 @@ app.use('/tool', toolRouter)
 app.use('/rates', ratesRouter)
 app.use('/write', writeRouter)
 app.use('/topic', topicRouter)
+app.use('/search', searchRouter)
+app.use('/navigator', navigatorRouter)
 app.use('/developer', developerRouter)
 
 // 捕获404并转发给错误处理程序
@@ -71,7 +79,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500)
   res.render('error')
 })
-
-
 
 module.exports = app
